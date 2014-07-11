@@ -1,0 +1,22 @@
+Implement OTA packet logic (ala packet_processor.c in other msprf24 projects) using Enrf24.
+
+
+Init/setup-
+begin()
+end()
+setTXqueueDepth(unsigned int queuedepth) // free & re-malloc the txQueue pointer
+setMaxPrograms(unsigned int maxprogs) // free & re-malloc/clear the program registration array
+
+TX side-
+boolean send(const uint8_t progID, const uint8_t *rfaddr, const int len, const void *buffer)  // return false if there are no more slots available
+void flush()  // send all queued TX packets
+
+RX side-
+available() // check if incoming data is available
+loop()  // read incoming data & run callbacks
+
+attachProgram(const uint8_t progID, (void *)(*callback)(const uint8_t progID, const int len, const void *buffer))  // register a callback
+detachProgram(const uint8_t progID)
+
+attachUnknownProgram((void *)(*callback)(const uint8_t progID, const int len, const void *buffer))  // register a default callback
+detachUnknownProgram()
