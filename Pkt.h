@@ -43,6 +43,7 @@ class Pkt {
 
 		boolean do_deepsleep_after_tx;
 		PKT_CALLBACK unknownProgramCallback;
+		PKT_CALLBACK defaultCallback;
 
 	public:
 		Pkt(Enrf24 *);
@@ -61,7 +62,9 @@ class Pkt {
 		boolean available();
 		void loop();
 
+		boolean attachAllPrograms(PKT_CALLBACK callback);
 		boolean attachProgram(const uint8_t progID, PKT_CALLBACK callback);
+		boolean detachAllPrograms();
 		boolean detachProgram(const uint8_t progID);
 
 		boolean attachUnknownProgram(PKT_CALLBACK callback);

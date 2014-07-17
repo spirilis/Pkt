@@ -23,6 +23,7 @@ Pkt::Pkt(Enrf24 *transceiver)
 	progRegs = NULL;
 	progRegsArrayBacking = NULL;
 	unknownProgramCallback = NULL;
+	defaultCallback = NULL;
 }
 
 void Pkt::setTransceiver(Enrf24 *transceiver)
@@ -236,6 +237,10 @@ void Pkt::loop(void)
 						Serial.println("Executing unknownProgramCallback-");
 						unknownProgramCallback((const uint8_t)rfbuf[i], (const int)rfbuf[i+1], (const void *)&rfbuf[i+2]);
 					}
+					// Run the defaultCallback (attachAllPrograms()) if defined
+					if (defaultCallback != NULL) {
+						defaultCallback((const uint8_t)rfbuf[i], (const int)rfbuf[i+1], (const void *)&rfbuf[i+2]);
+					}
 					// Flush this packet and advance
 					i += rfbuf[i+1] + 1;  // note; for() logic will advance 'i' one more
 				} else {
@@ -303,5 +308,23 @@ boolean Pkt::detachUnknownProgram(void)
 		return false;
 	
 	unknownProgramCallback = NULL;
+	return true;
+}
+
+boolean Pkt::attachAllPrograms(PKT_CALLBACK callback)
+{
+	if (callback == NULL || defaultCallback != NULL)
+		return false;
+
+	defaultCallback = callback;
+	return true;
+}
+
+boolean Pkt::detachAllPrograms(void)
+{
+	if (defaultCallback == NULL)
+		return false;
+
+	defaultCallback = NULL;
 	return true;
 }
